@@ -74,8 +74,7 @@ for i in range(num_conn):
                 print('Conexión finalizada exitosamente')
                 log.write('Entrega del archivo: Se envio correctamente'+'\n')  
                 end = time.time()
-
-        log.write('Tiempo transferencia: '+str(end-start)+'\n')  
+                log.write('Tiempo transferencia: '+str(end - start)+'\n')  
             
     finally:
         connection.close()
