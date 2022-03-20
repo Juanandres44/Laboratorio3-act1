@@ -1,123 +1,116 @@
 import socket
 import sys
 import hashlib
-import os
 import threading
+import os
 from datetime import datetime
 import time
 
-num_clientes = int(input('Ingrese la cantidad de clientes que desea crear, recuerde que el servidor quedara esperando '
-                         'conexión hasta completar las cantidad de clientes que se le especifico atender'))
-while (num_clientes>25 and num_clientes <= 0):
-    num_clientes = int(input('Ingrese un número válido de clientes (Entre 0 y 25)'))
+num_clientes = int(input('Bienvenido usuario. Por favor ingrese la cantidad de clientes que desea crear: '))
+
+while (num_clientes <= 0 and num_clientes>25 ):
+    num_clientes = int(input('Por favor ingresar un número válido: '))
 
 
-#Creación del Log
-
-
-class Ejecucion:    
+class Main:    
     def __init__(self):
         self.lock = threading.Lock()
     def cliente_funct(self, nombre):
         self.lock.acquire()
         
+        # Creacion de logs
         log = open("./logs/"+nombre+' '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+"log.txt", "w")
         self.lock.release()
-        # Create a TCP/IP socket
+
+        # Crear a TCP/IP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
-        # Conectar socket al puerto donde se esta escuchando
+        # Conectar socket al puerto. IP de maquina virtual de ubuntu
         server_address = ('192.168.37.133', 8888)
-        print( 'connecting to %s port %s' % server_address)
+        print('Connectando a %s puerto %s' % server_address)
         sock.connect(server_address)
-        file = open("./archivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt", "w")
+        file = open("./ArchivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt", "w")
        
         
         try:
-            
-            # Enviar datos
-            message = b'Iniciar conexion...'
-            print ( 'enviando "%s"' % message)
-            sock.sendall(message)
+            # Envio de datos
+            mensaje = b'Inicio conexion'
+            print ( 'Enviando "%s"' % mensaje)
+            sock.sendall(mensaje)
         
-            # buscar la respuesta
-
             confirmacion = sock.recv(32)
             print(confirmacion.decode('utf-8'))
-            #hash a comparar
-            md5 = hashlib.md5()
+
+            #Hash
+            hashEnc = hashlib.md5()
             if(confirmacion.decode('utf-8') == "ok"):
-                sock.sendall(b'Cual es el nombre del archivo?')
+                sock.sendall(b'Favor ingresar nombre del archivo: ')
                 nA = sock.recv(32)
                 nombreArchivo = nA.decode('utf-8') 
                 log.write('El nombre del archivo es: '+nombreArchivo+'\n')
-                
-                sock.sendall(b'listo')
+                sock.sendall(b'Listo')
                 self.lock.acquire()
                 hash = sock.recv(32)
-                print('Hash enviado por el servidor:',hash.decode('utf-8'))
+                print('Este es el Hash enviado por el servidor TCP: ',hash.decode('utf-8'))
                 sock.sendall(b'Hash recibido')
                 self.lock.release()
-                
-                
-                num_paquetes=0
+                num_paq=0
                 start = time.time()
 
-                while (True):
-                       
+                while (True):   
                     data = sock.recv(1024)
                     
                     if data:
                         try:
                             file.write(data.decode('utf-8') + os.linesep)
-                            md5.update(data)
-                            num_paquetes+=1
+                            hashEnc.update(data)
+                            num_paq+=1
                             
                         except:
                             print("Error") 
-                            sock.sendall(b'Hubo un error al recibir el archivo')
+                            sock.sendall(b'Error al recibir el archivo')
                             break
                         
                     else:
-                        print ( 'Termino de leer el archivo')
+                        print ('Archivo leido')
                         sock.sendall(b'Archivo recibido')
                         break
                 end = time.time()
                 
-                tamano = os.path.getsize("./archivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt")
+                tam = os.path.getsize("./ArchivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt")
                 
                 file.close()
-                log.write('El tamaño del archivo es: '+str(tamano/1000000)+' MB'+'\n')
+                log.write('El tamaño del archivo es: '+str(tam/1000000)+' MB'+'\n')
                 log.write('El nombre del cliente es: '+nombre+'\n')
-               
-               
-                print("Hash del archivo leido: {0}".format(md5.hexdigest()))
+                print("Hash del archivo leido: {0}".format(hashEnc.hexdigest()))
                   
-                
-                if(hash.decode('utf-8') == md5.hexdigest()):
+                if(hash.decode('utf-8') == hashEnc.hexdigest()):
                     print("Archivo leido correctamente")
                     log.write('Entrega del archivo exitosa'+'\n')
                 else:
-                    print("hubo un error al momento de leer el archivo")
+                    print("Error al momento de leer el archivo")
                     log.write('Entrega del archivo no exitosa'+'\n')
-                log.write('Tiempo de transferencia: '+str(end-start)+ ' segs'+'\n')    
-                log.write('Cantidad de paquetes recibidos: '+str(num_paquetes)+'\n') 
-                log.write('Valor total en bytes recibidos: '+str(tamano)+'\n')  
+
+                log.write('Tiempo de transferencia: '+str(end-start)+ ' segs'+'\n')  
+                log.write('Valor total en bytes recibidos: '+str(tam)+'\n')    
+                log.write('Numero de paquetes recibidos: '+str(num_paq)+'\n') 
+                
                 
         finally:
-            print ( 'Cerrar socket')
+            print ('Cerrando socket')
             sock.close()
+            print('Fin')
             log.close()
-            
-            
-
-def worker(c, nombre):
+                   
+def Target(c, nombre):
         c.cliente_funct(nombre)
-        
-hilo=Ejecucion()
+
+
+
+hilo=Main()
 for num_cliente in range(num_clientes):
     cliente = threading.Thread(name="Cliente%s" %(num_cliente+1),
-                               target=worker,
+                               target=Target,
                                args=(hilo,"Cliente%s" %(num_cliente+1))
                               )
     cliente.start()
