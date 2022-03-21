@@ -49,7 +49,7 @@ class Main:
                 nombreArchivo = nA.decode('utf-8') 
                 log.write('El nombre del archivo es: '+nombreArchivo+'\n')
                 print('El nombre del archivo es: '+nombreArchivo+'\n')
-                sock.sendall(b'Listo')
+                sock.sendall(b'listo')
                 self.lock.acquire()
                 hash = sock.recv(32)
                 print('Este es el Hash enviado por el servidor TCP: ',hash.decode('utf-8'))
@@ -69,7 +69,7 @@ class Main:
                             
                         except:
                             print("Error") 
-                            sock.sendall(b'Error al recibir el archivo')
+                            sock.sendall(b'Hubo un error al recibir el archivo')
                             break
                         
                     else:

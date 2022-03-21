@@ -31,11 +31,13 @@ log.write('Fecha: '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+'\n')
 log.write('Nombre: '+file+'\n')  
 archivo = open(file, 'rb')
 buffer = archivo.read(1024)
-hashEnc = hashlib.md5() 
+hashEnc = hashlib.md5()
+print(hashEnc) 
 
 while(buffer):
     hashEnc.update(buffer)
     buffer = archivo.read(1024)
+
   
 # Escuchando conexiones
 sock.listen(25)
@@ -61,6 +63,7 @@ for i in range(num_conn):
         print(data.decode('utf-8'))
         if(data.decode('utf-8')== "listo"):
             connection.sendall(bytes(hashEnc.hexdigest(), 'utf-8'))
+            print(hashEnc.hexdigest())
 
             #Enviar archivo
             recibido = connection.recv(32)
