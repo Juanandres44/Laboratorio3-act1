@@ -20,17 +20,17 @@ print('El %s esta esparando en el puerto %s' % server_address)
 sock.bind(server_address)
 
 #archivo a transmitir
-filename = input('Por favor ingrese el nombre del archivo a enviar. ej: Prueba_100MB.txt o Prueba_250MB.txt')
-while filename not in ['Prueba_100MB.txt','Prueba_250MB.txt']:
-    filename = input('Por favor ingresar un nombre de archivo correcto: ')
+file = input('Por favor ingrese el nombre del archivo a enviar. ej: Prueba_100MB.txt o Prueba_250MB.txt ')
+while file not in ['Prueba_100MB.txt','Prueba_250MB.txt']:
+    file = input('Por favor ingresar un nombre de archivo correcto: ')
 
-tamano_archivo = os.path.getsize(filename)
+archivoSize = os.path.getsize(file)
 
 log = open("./logs/servidor-"+' '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+"log.txt", "w")
 log.write('Fecha: '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+'\n')  
-log.write('El nombre es: '+filename+'\n')  
+log.write('El nombre es: '+file+'\n')  
 
-archivo = open(filename, 'rb')
+archivo = open(file, 'rb')
 buf = archivo.read(1024)
 md5 = hashlib.md5() 
 
@@ -43,7 +43,7 @@ sock.listen(25)
 
 for i in range(num_conn):
 
-    f = open(filename,'rb')
+    f = open(file,'rb')
     l = f.read(1024)
   
     print ( 'El servidor esta a la espera de una conexión')
@@ -58,7 +58,7 @@ for i in range(num_conn):
         connection.sendall(b'ok')
         
         connection.recv(32)
-        connection.sendall(bytes(filename, 'utf-8'))
+        connection.sendall(bytes(file, 'utf-8'))
         
         data = connection.recv(32)
         
