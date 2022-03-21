@@ -15,13 +15,13 @@ while (num_conexiones>25 and num_conexiones <= 0):
 
 
 # conectar socket al puerto
-server_address = ('192.168.58.128', 8888)
+server_address = ('192.168.37.133', 8888)
 print('El %s esta esparando en el puerto %s' % server_address)
 sock.bind(server_address)
 
 #archivo a transmitir
-filename = input('Ingrese el nombre del archivo a enviar (100mb.txt o 250mb.txt)')
-while filename not in ['100mb.txt','250mb.txt']:
+filename = input('Ingrese el nombre del archivo a enviar (Prueba_100MB.txt o Prueba_250MB.txt)')
+while filename not in ['Prueba_100MB.txt','Prueba_250MB.txt']:
     filename = input('Ingrese un nombre correcto del archivo a enviar')
 
 tamano_archivo = os.path.getsize(filename)

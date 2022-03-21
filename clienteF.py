@@ -27,10 +27,10 @@ class Ejecucion:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         # Conectar socket al puerto donde se esta escuchando
-        server_address = ('192.168.58.128', 8888)
+        server_address = ('192.168.37.133', 8888)
         print( 'connecting to %s port %s' % server_address)
         sock.connect(server_address)
-        file = open("./archivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt", "w")
+        file = open("./ArchivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt", "w")
        
         
         try:
