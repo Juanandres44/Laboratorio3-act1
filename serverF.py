@@ -46,12 +46,12 @@ for i in range(num_conn):
     f = open(file,'rb')
     l = f.read(1024)
   
-    print ( 'El servidor esta a la espera de una conexión')
-    connection, client_address = sock.accept()
+    print ('El servidor esta a la espera de una conexión')
+    connection, client_addr = sock.accept()
     start = time.time()
-    log.write('Direccion del cliente: '+str(client_address)+'\n')  
+    log.write('Direccion del cliente: '+str(client_addr)+'\n')  
     try:
-        print ( 'Conectado desde', client_address)
+        print ('Conectado de', client_addr)
         
         data = connection.recv(32) 
             

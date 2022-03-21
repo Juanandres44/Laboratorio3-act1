@@ -46,12 +46,12 @@ class Main:
                 sock.sendall(b'Cual es el nombre del archivo?')
                 nA = sock.recv(32)
                 nombreArchivo = nA.decode('utf-8') 
-                log.write('El nombre del archivo es: '+nombreArchivo+'\n')
+                log.write('El nombre es: '+nombreArchivo+'\n')
                 
                 sock.sendall(b'listo')
                 self.lock.acquire()
                 hash = sock.recv(32)
-                print('Hash enviado por el servidor:',hash.decode('utf-8'))
+                print('Hash enviado por el servidor TCP:',hash.decode('utf-8'))
                 sock.sendall(b'Hash recibido')
                 self.lock.release()
                 
@@ -70,7 +70,7 @@ class Main:
                             num_paq+=1
                             
                         except:
-                            print("Hubo Error") 
+                            print('Hubo Error') 
                             sock.sendall(b'Hubo un error al recibir el archivo')
                             break
                         
@@ -83,26 +83,29 @@ class Main:
                 tam = os.path.getsize("./archivosRecibidos/"+nombre+"-prueba-"+str(num_client)+".txt")
                 
                 file.close()
-                log.write('El tamaño del archivo es: '+str(tam/1000000)+' MB'+'\n')
                 log.write('El nombre del cliente es: '+nombre+'\n')
+                log.write('El tamaño del archivo es: '+str(tam/1000000)+' MB'+'\n')
+                
                
                
                 print("Hash del archivo leido: {0}".format(md5.hexdigest()))
                   
                 
                 if(hash.decode('utf-8') == md5.hexdigest()):
-                    print("Archivo leido correctamente")
-                    log.write('Entrega del archivo exitosa'+'\n')
+                    print("Archivo leido")
+                    log.write('Entrega del archivo'+'\n')
                 else:
-                    print("hubo un error al momento de leer el archivo")
-                    log.write('Entrega del archivo no exitosa'+'\n')
-                log.write('Tiempo de transferencia: '+str(end-start)+ ' segs'+'\n')    
+                    print("Ocurrio un error al momento de leer el archivo")
+                    log.write('Falla de entrega del archivo'+'\n')
+                log.write('Tiempo de transferencia: '+str(end-start)+ ' segs'+'\n') 
+                log.write('Valor total en bytes recibidos: '+str(tam)+'\n')     
                 log.write('Cantidad de paquetes recibidos: '+str(num_paq)+'\n') 
-                log.write('Valor total en bytes recibidos: '+str(tam)+'\n')  
+                
                 
         finally:
-            print ( 'Cerrar socket')
+            print ('Cerrar socket')
             sock.close()
+            print ('Fin del programa')
             log.close()
             
             
