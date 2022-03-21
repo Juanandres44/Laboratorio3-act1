@@ -6,16 +6,12 @@ import threading
 from datetime import datetime
 import time
 
-num_clientes = int(input('Ingrese la cantidad de clientes que desea crear, recuerde que el servidor quedara esperando '
-                         'conexión hasta completar las cantidad de clientes que se le especifico atender'))
-while (num_clientes>25 and num_clientes <= 0):
-    num_clientes = int(input('Ingrese un número válido de clientes (Entre 0 y 25)'))
+num_client = int(input('Cuantos clientes desea crear? '))
+while (num_client>25 and num_client <= 0):
+    num_client = int(input('Por favor ingresar un número válido: '))
 
 
-#Creación del Log
-
-
-class Ejecucion:    
+class Main:    
     def __init__(self):
         self.lock = threading.Lock()
     def cliente_funct(self, nombre):
@@ -23,22 +19,22 @@ class Ejecucion:
         
         log = open("./logs/"+nombre+' '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+"log.txt", "w")
         self.lock.release()
-        # Create a TCP/IP socket
+        # Crear a TCP
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         # Conectar socket al puerto donde se esta escuchando
         server_address = ('192.168.37.133', 8888)
         print( 'connecting to %s port %s' % server_address)
         sock.connect(server_address)
-        file = open("./ArchivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt", "w")
+        file = open("./ArchivosRecibidos/"+nombre+"-prueba-"+str(num_client)+".txt", "w")
        
         
         try:
             
             # Enviar datos
-            message = b'Iniciar conexion...'
-            print ( 'enviando "%s"' % message)
-            sock.sendall(message)
+            mensaje = b'Iniciar conexion...'
+            print ( 'enviando "%s"' % mensaje)
+            sock.sendall(mensaje)
         
             # buscar la respuesta
 
@@ -60,7 +56,7 @@ class Ejecucion:
                 self.lock.release()
                 
                 
-                num_paquetes=0
+                num_paq=0
                 start = time.time()
 
                 while (True):
@@ -71,23 +67,23 @@ class Ejecucion:
                         try:
                             file.write(data.decode('utf-8') + os.linesep)
                             md5.update(data)
-                            num_paquetes+=1
+                            num_paq+=1
                             
                         except:
-                            print("Error") 
+                            print("Hubo Error") 
                             sock.sendall(b'Hubo un error al recibir el archivo')
                             break
                         
                     else:
-                        print ( 'Termino de leer el archivo')
+                        print ('Final de lectura del archivo')
                         sock.sendall(b'Archivo recibido')
                         break
                 end = time.time()
                 
-                tamano = os.path.getsize("./archivosRecibidos/"+nombre+"-prueba-"+str(num_clientes)+".txt")
+                tam = os.path.getsize("./archivosRecibidos/"+nombre+"-prueba-"+str(num_client)+".txt")
                 
                 file.close()
-                log.write('El tamaño del archivo es: '+str(tamano/1000000)+' MB'+'\n')
+                log.write('El tamaño del archivo es: '+str(tam/1000000)+' MB'+'\n')
                 log.write('El nombre del cliente es: '+nombre+'\n')
                
                
@@ -101,8 +97,8 @@ class Ejecucion:
                     print("hubo un error al momento de leer el archivo")
                     log.write('Entrega del archivo no exitosa'+'\n')
                 log.write('Tiempo de transferencia: '+str(end-start)+ ' segs'+'\n')    
-                log.write('Cantidad de paquetes recibidos: '+str(num_paquetes)+'\n') 
-                log.write('Valor total en bytes recibidos: '+str(tamano)+'\n')  
+                log.write('Cantidad de paquetes recibidos: '+str(num_paq)+'\n') 
+                log.write('Valor total en bytes recibidos: '+str(tam)+'\n')  
                 
         finally:
             print ( 'Cerrar socket')
@@ -114,8 +110,8 @@ class Ejecucion:
 def worker(c, nombre):
         c.cliente_funct(nombre)
         
-hilo=Ejecucion()
-for num_cliente in range(num_clientes):
+hilo=Main()
+for num_cliente in range(num_client):
     cliente = threading.Thread(name="Cliente%s" %(num_cliente+1),
                                target=worker,
                                args=(hilo,"Cliente%s" %(num_cliente+1))

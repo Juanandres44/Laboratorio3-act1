@@ -8,10 +8,10 @@ from datetime import datetime
 # Crear socket tcp/ip
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-num_conexiones = int(input('Ingrese la cantidad de conexiones que desea atender'))
+num_conn = int(input('Bienvenido al servidor TCP. Por favor ingresar la cantidad de conexiones: '))
 
-while (num_conexiones>25 and num_conexiones <= 0):
-    num_conexiones = int(input('Ingrese un número válido de conexiones (Entre 0 y 25)'))
+while (num_conn>25 and num_conn <= 0):
+    num_conn = int(input('Por favor ingresar un número válido: '))
 
 
 # conectar socket al puerto
@@ -20,15 +20,15 @@ print('El %s esta esparando en el puerto %s' % server_address)
 sock.bind(server_address)
 
 #archivo a transmitir
-filename = input('Ingrese el nombre del archivo a enviar (Prueba_100MB.txt o Prueba_250MB.txt)')
+filename = input('Por favor ingrese el nombre del archivo a enviar. ej: Prueba_100MB.txt o Prueba_250MB.txt')
 while filename not in ['Prueba_100MB.txt','Prueba_250MB.txt']:
-    filename = input('Ingrese un nombre correcto del archivo a enviar')
+    filename = input('Por favor ingresar un nombre de archivo correcto: ')
 
 tamano_archivo = os.path.getsize(filename)
 
 log = open("./logs/servidor-"+' '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+"log.txt", "w")
-log.write('Fecha del archivo: '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+'\n')  
-log.write('El nombre del archivo es: '+filename+'\n')  
+log.write('Fecha: '+datetime.today().strftime('%Y-%m-%d-%H-%M-%S')+'\n')  
+log.write('El nombre es: '+filename+'\n')  
 
 archivo = open(filename, 'rb')
 buf = archivo.read(1024)
@@ -38,19 +38,15 @@ while(buf):
     md5.update(buf)
     buf = archivo.read(1024)
 
-#Saca el hash del archivo
   
-# Listen for incoming connections
 sock.listen(25)
 
-for i in range(num_conexiones):
-    
-    #Leemos la primera linea del archivo 
+for i in range(num_conn):
+
     f = open(filename,'rb')
     l = f.read(1024)
-    
-    # Espera por una conexion
-    print ( 'El servidor esta esparando una conexión')
+  
+    print ( 'El servidor esta a la espera de una conexión')
     connection, client_address = sock.accept()
     start = time.time()
     log.write('Direccion del cliente: '+str(client_address)+'\n')  
