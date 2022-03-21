@@ -53,7 +53,7 @@ for i in range(num_conn):
     try:
         print ('Conectado', client_address)
         data = connection.recv(32) 
-        connection.sendall(b'Finalizado')
+        connection.sendall(b'ok')
         connection.recv(32)
         connection.sendall(bytes(file, 'utf-8'))
         data = connection.recv(32)

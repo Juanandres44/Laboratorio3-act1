@@ -48,6 +48,7 @@ class Main:
                 nA = sock.recv(32)
                 nombreArchivo = nA.decode('utf-8') 
                 log.write('El nombre del archivo es: '+nombreArchivo+'\n')
+                print('El nombre del archivo es: '+nombreArchivo+'\n')
                 sock.sendall(b'Listo')
                 self.lock.acquire()
                 hash = sock.recv(32)
